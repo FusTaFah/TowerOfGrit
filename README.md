@@ -1,6 +1,6 @@
 # Codename Inline Dracozu
 
-It's a game like Zelda 2 only you can aim your sword, and depending on the defensive item, will have to aim that too.
+2D side scroller twinstick fighter
 
 The story follows the main character in their quest to right the wrongs of a society ruled by feudalism and exploitation, or revel in it.
 
