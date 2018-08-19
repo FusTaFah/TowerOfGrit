@@ -11,7 +11,7 @@ public class PlayerControls : MonoBehaviour {
     bool            m_boolIsCrouching;
     Vector3         m_vector3PlayerScale;
     bool            m_boolIsJumping;
-    const float     m_constFloatGroundDistanceQualifier = 0.01f;
+    const float     m_constFloatGroundDistanceQualifier = 0.03f;
 
 	// Use this for initialization
 	void Start () {
@@ -32,30 +32,16 @@ public class PlayerControls : MonoBehaviour {
         m_floatXSpeed += moveX * m_floatMovementSpeed * Time.deltaTime;
         m_floatXSpeed = Mathf.Clamp(m_floatXSpeed, -3.0f, 3.0f);
 
-        //ContactFilter2D movementCollisionFilter = new ContactFilter2D();
-        //LayerMask movementMask = new LayerMask();
-        //movementMask.value = GeneralUtil.LayerAlias.Movement;
-        //movementCollisionFilter.layerMask = movementMask;
         Vector2 boundingBoxCenter = new Vector2(playerRig.GetComponent<Collider2D>().bounds.center.x, playerRig.GetComponent<Collider2D>().bounds.center.y);
         
-        Vector2 rayOriginLeft = boundingBoxCenter - new Vector2(playerRig.GetComponent<Collider2D>().bounds.size.x / 2, playerRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
-        Vector2 rayOriginMiddle = boundingBoxCenter - new Vector2(0, playerRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
-        Vector2 rayOriginRight = boundingBoxCenter - new Vector2(-playerRig.GetComponent<Collider2D>().bounds.size.x / 2, playerRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
+        Vector2 boundingBoxBottomLeft = boundingBoxCenter - new Vector2(playerRig.GetComponent<Collider2D>().bounds.size.x / 2.0f - m_constFloatGroundDistanceQualifier, playerRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
+        Vector2 boundingBoxBottomRight = boundingBoxCenter - new Vector2(-playerRig.GetComponent<Collider2D>().bounds.size.x / 2.0f + m_constFloatGroundDistanceQualifier, playerRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
 
-        Ray2D rayToGroundFromLeft = new Ray2D(rayOriginLeft, Vector2.down);
-        Ray2D rayToGroundFromMiddle = new Ray2D(rayOriginMiddle, Vector2.down);
-        Ray2D rayToGroundFromRight = new Ray2D(rayOriginRight, Vector2.down);
+        Collider2D rch = Physics2D.OverlapArea(boundingBoxBottomLeft, boundingBoxBottomRight);
 
-        RaycastHit2D raycastHit2DLeft = Physics2D.Raycast(rayToGroundFromLeft.origin, rayToGroundFromLeft.direction, m_constFloatGroundDistanceQualifier);
-        RaycastHit2D raycastHit2DMiddle = Physics2D.Raycast(rayToGroundFromMiddle.origin, rayToGroundFromMiddle.direction, m_constFloatGroundDistanceQualifier);
-        RaycastHit2D raycastHit2DRight = Physics2D.Raycast(rayToGroundFromRight.origin, rayToGroundFromRight.direction, m_constFloatGroundDistanceQualifier);
-
-        Debug.DrawLine(rayToGroundFromLeft.origin, rayToGroundFromLeft.origin + rayToGroundFromLeft.direction * m_constFloatGroundDistanceQualifier, Color.green);
-        Debug.DrawLine(rayToGroundFromMiddle.origin, rayToGroundFromMiddle.origin + rayToGroundFromMiddle.direction * m_constFloatGroundDistanceQualifier, Color.green);
-        Debug.DrawLine(rayToGroundFromRight.origin, rayToGroundFromRight.origin + rayToGroundFromRight.direction * m_constFloatGroundDistanceQualifier, Color.green);
-
+        Debug.DrawLine(boundingBoxBottomLeft, boundingBoxBottomRight, Color.green);
         //m_gameObjectGround.Count(n => playerRig.IsTouching(n.GetComponent<Collider2D>()/*, movementCollisionFilter*/)) > 0
-        if (raycastHit2DLeft.collider != null || raycastHit2DMiddle.collider != null || raycastHit2DRight.collider != null)
+        if (rch != null)
         {
 
             if (moveX == 0.0f && !m_boolIsJumping)
