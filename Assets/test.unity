@@ -402,6 +402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_floatMovementSpeed: 200
   m_floatJumpHeight: 400
+  m_floatMaxSlope: 0
 --- !u!61 &428862676
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1139,8 +1140,8 @@ MonoBehaviour:
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: New Text
 --- !u!222 &1555318266
