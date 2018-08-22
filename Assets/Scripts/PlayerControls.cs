@@ -76,9 +76,10 @@ public class PlayerControls : MonoBehaviour {
         {
             float heightFromFeetLeft = (slopeCheckLeft.collider == null ? 0.0f : m_rigidBody2DplayerRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckLeft.distance);
             float heightFromFeetRight = (slopeCheckRight.collider == null ? 0.0f : m_rigidBody2DplayerRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckRight.distance);
-            
-            float angleBetweenLeft = (Mathf.Atan(heightFromFeetLeft / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f;
-            float angleBetweenRight = (Mathf.Atan(heightFromFeetRight / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f;
+
+            //as of 22/08/2018 it seems the angle is off by approximately 3.3 degrees if m_constFloatGroundDistanceQualifier is 2.0f
+            float angleBetweenLeft = (Mathf.Atan(heightFromFeetLeft / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f + 3.3f;
+            float angleBetweenRight = (Mathf.Atan(heightFromFeetRight / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f + 3.3f;
             //if (angleBetweenLeft >= 80.0f || angleBetweenRight >= 80.0f) jumpingOverride = true;
             m_debugUtil.AppendDebugger(string.Format("angle between left = {0}\nangle between right = {1}", angleBetweenLeft, angleBetweenRight));
             if (!m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight <= m_floatMaxSlope)
