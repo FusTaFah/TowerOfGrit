@@ -212,16 +212,11 @@ public class ActorControls : MonoBehaviour {
         gameObject.transform.localScale = new Vector3(m_vector3PlayerScale.x, m_vector3PlayerScale.y / (m_boolIsCrouching ? 2.0f : 1.0f), m_vector3PlayerScale.z);
     }
 
-    protected void ResolveAimingInputs()
+    protected virtual void ResolveAimingInputs()
     {
-        m_floatXAimingInput = Input.GetAxis("HorizontalAim");
-        m_floatYAimingInput = Input.GetAxis("VerticalAim");
     }
 
-    protected void ResolveMovementInputs()
+    protected virtual void ResolveMovementInputs()
     {
-        m_floatYMovementInput = Input.GetAxis("Vertical");
-        m_floatXMovementInput = Input.GetAxis("Horizontal");
-        m_boolJumpInput = Input.GetKey(KeyCode.Joystick1Button0);
     }
 }
