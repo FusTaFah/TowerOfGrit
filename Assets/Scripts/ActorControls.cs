@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 //41.151.254.162
 
-public class PlayerControls : MonoBehaviour {
+public class ActorControls : MonoBehaviour {
     public float    m_floatMovementSpeed;
     public float    m_floatJumpHeight;
     public float    m_floatMaxSlope;
