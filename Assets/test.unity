@@ -320,9 +320,9 @@ GameObject:
   m_Component:
   - component: {fileID: 428862674}
   - component: {fileID: 428862673}
-  - component: {fileID: 428862675}
   - component: {fileID: 428862676}
   - component: {fileID: 428862677}
+  - component: {fileID: 428862675}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -397,7 +397,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 428862672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d45d8c781cda1b4e84b5053519b548b, type: 3}
+  m_Script: {fileID: 11500000, guid: 70e4433053a2a1340ad5caaf9c2b9b97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_floatMovementSpeed: 200
