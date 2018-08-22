@@ -11,7 +11,7 @@ public class PlayerControls : MonoBehaviour {
     float           m_floatXSpeed;
     GameObject      m_gameObjectAimLine;
     Vector3         m_vector3PlayerScale;
-    const float     m_constFloatGroundDistanceQualifier = 0.03f;
+    const float     m_constFloatGroundDistanceQualifier = 0.2f;
     const float     m_constFloatDeadZone = 0.1f;
     Rigidbody2D     m_rigidBody2DplayerRig;
     bool            m_boolFacingRight;
@@ -35,7 +35,7 @@ public class PlayerControls : MonoBehaviour {
         ResolveMovement();
     }
 
-	void Update () {
+    void Update () {
         ResolveAimLine();
         ResolveFacingDirection();
     }
@@ -69,15 +69,18 @@ public class PlayerControls : MonoBehaviour {
 
         bool enableJumping = true;
         bool enableMovement = true;
+        //ONLY if the player gets stuck
+        bool jumpingOverride = false;
 
         if(slopeCheckLeft.collider != null || slopeCheckRight.collider != null)
         {
             float heightFromFeetLeft = (slopeCheckLeft.collider == null ? 0.0f : m_rigidBody2DplayerRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckLeft.distance);
             float heightFromFeetRight = (slopeCheckRight.collider == null ? 0.0f : m_rigidBody2DplayerRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckRight.distance);
-            m_debugUtil.AppendDebugger(heightFromFeetRight.ToString());
-            float angleBetweenLeft = Mathf.Atan(heightFromFeetLeft / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg;
-            float angleBetweenRight = Mathf.Atan(heightFromFeetRight / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg;
-
+            
+            float angleBetweenLeft = (Mathf.Atan(heightFromFeetLeft / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f;
+            float angleBetweenRight = (Mathf.Atan(heightFromFeetRight / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f;
+            //if (angleBetweenLeft >= 80.0f || angleBetweenRight >= 80.0f) jumpingOverride = true;
+            m_debugUtil.AppendDebugger(string.Format("angle between left = {0}\nangle between right = {1}", angleBetweenLeft, angleBetweenRight));
             if (!m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight <= m_floatMaxSlope)
             {
                 enableJumping = false;
@@ -86,34 +89,36 @@ public class PlayerControls : MonoBehaviour {
             }
             else if (!m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
             {
-                enableJumping = false;
-                enableMovement = true;
+                enableJumping = true;
+                jumpingOverride = true;
+                enableMovement = false;
                 m_debugUtil.AppendDebugger("01");
             }
             else if (!m_boolFacingRight && angleBetweenLeft <= m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
             {
                 enableJumping = false;
                 enableMovement = true;
-                m_debugUtil.AppendDebugger("03");
+                m_debugUtil.AppendDebugger("02");
             }
             else if (m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
             {
                 enableJumping = true;
+                jumpingOverride = true;
                 enableMovement = false;
-                m_debugUtil.AppendDebugger("05");
+                m_debugUtil.AppendDebugger("03");
             }
             else if (m_boolFacingRight && angleBetweenLeft <= m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
             {
                 enableJumping = false;
                 enableMovement = false;
-                m_debugUtil.AppendDebugger("07");
+                m_debugUtil.AppendDebugger("04");
             }
 
         }
 
         if (enableJumping)
         {
-            if (rch != null)
+            if (rch != null || jumpingOverride)
             {
                 if (moveX == 0.0f && !m_boolIsJumping)
                 {
