@@ -18,10 +18,15 @@ public class ActorControls : MonoBehaviour {
     bool            m_boolIsJumping;
     bool            m_boolIsCrouching;
     DebugUtil       m_debugUtil;
+    protected float m_floatXMovementInput;
+    protected bool m_boolJumpInput;
+    protected float m_floatYMovementInput;
+    protected float m_floatXAimingInput;
+    protected float m_floatYAimingInput;
 
     void Start () {
         m_floatXSpeed = 0.0f;
-        m_gameObjectAimLine = GameObject.Find("AimLine");
+        m_gameObjectAimLine = Instantiate(Resources.Load("Prefabs/AimLine")) as GameObject;
         m_boolIsCrouching = false;
         m_vector3PlayerScale = gameObject.transform.localScale;
         m_boolIsJumping = false;
@@ -32,17 +37,19 @@ public class ActorControls : MonoBehaviour {
 	
     void FixedUpdate()
     {
+        ResolveMovementInputs();
         ResolveMovement();
     }
 
     void Update () {
+        ResolveAimingInputs();
         ResolveAimLine();
         ResolveFacingDirection();
     }
 
     private void ResolveMovement()
     {
-        float moveX = Input.GetAxis("Horizontal");
+        float moveX = m_floatXMovementInput;
         if (moveX <= -m_constFloatDeadZone)
         {
             m_boolFacingRight = false;
@@ -126,7 +133,7 @@ public class ActorControls : MonoBehaviour {
                     m_rigidBody2DplayerRig.velocity = Vector2.zero;
                     m_floatXSpeed = 0.0f;
                 }
-                if (Input.GetKey(KeyCode.Joystick1Button0))
+                if (m_boolJumpInput)
                 {
                     m_boolIsJumping = true;
                     m_rigidBody2DplayerRig.velocity = Vector2.zero;
@@ -143,7 +150,7 @@ public class ActorControls : MonoBehaviour {
             m_rigidBody2DplayerRig.velocity = new Vector2(m_floatXSpeed * (m_boolIsCrouching ? 0.5f : 1.0f), m_rigidBody2DplayerRig.velocity.y);
         }
 
-        float moveY = Input.GetAxis("Vertical");
+        float moveY = m_floatYMovementInput;
         if (moveY < -0.5f)
         {
             m_boolIsCrouching = true;
@@ -177,8 +184,8 @@ public class ActorControls : MonoBehaviour {
 
     private void ResolveAimLine()
     {
-        float horizaAim = Input.GetAxis("HorizontalAim");
-        float verticAim = Input.GetAxis("VerticalAim");
+        float horizaAim = m_floatXAimingInput;
+        float verticAim = m_floatYAimingInput;
         float playerHeight = m_rigidBody2DplayerRig.GetComponent<Collider2D>().bounds.size.y;
         Vector2 shoulderOffset = new Vector2(0.0f, playerHeight * m_constFloatDeadZone);
         Vector2 playerMiddlePosition = m_rigidBody2DplayerRig.GetComponent<Collider2D>().bounds.center;
@@ -203,5 +210,18 @@ public class ActorControls : MonoBehaviour {
         m_vector3PlayerScale = new Vector3((m_boolFacingRight ? 1 : -1) * Mathf.Abs(m_vector3PlayerScale.x), m_vector3PlayerScale.y, m_vector3PlayerScale.z);
         
         gameObject.transform.localScale = new Vector3(m_vector3PlayerScale.x, m_vector3PlayerScale.y / (m_boolIsCrouching ? 2.0f : 1.0f), m_vector3PlayerScale.z);
+    }
+
+    protected void ResolveAimingInputs()
+    {
+        m_floatXAimingInput = Input.GetAxis("HorizontalAim");
+        m_floatYAimingInput = Input.GetAxis("VerticalAim");
+    }
+
+    protected void ResolveMovementInputs()
+    {
+        m_floatYMovementInput = Input.GetAxis("Vertical");
+        m_floatXMovementInput = Input.GetAxis("Horizontal");
+        m_boolJumpInput = Input.GetKey(KeyCode.Joystick1Button0);
     }
 }
