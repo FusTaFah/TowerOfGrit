@@ -33,8 +33,9 @@ public class ActorControls : MonoBehaviour {
         m_rigidBody2DplayerRig = gameObject.GetComponent<Rigidbody2D>();
         m_boolFacingRight = true;
         m_debugUtil = GameObject.Find("DebugCanvasElementent").GetComponent<DebugUtil>();
+        Initialise();
     }
-	
+
     void FixedUpdate()
     {
         ResolveMovementInputs();
@@ -210,6 +211,11 @@ public class ActorControls : MonoBehaviour {
         m_vector3PlayerScale = new Vector3((m_boolFacingRight ? 1 : -1) * Mathf.Abs(m_vector3PlayerScale.x), m_vector3PlayerScale.y, m_vector3PlayerScale.z);
         
         gameObject.transform.localScale = new Vector3(m_vector3PlayerScale.x, m_vector3PlayerScale.y / (m_boolIsCrouching ? 2.0f : 1.0f), m_vector3PlayerScale.z);
+    }
+
+    protected virtual void Initialise()
+    {
+
     }
 
     protected virtual void ResolveAimingInputs()
