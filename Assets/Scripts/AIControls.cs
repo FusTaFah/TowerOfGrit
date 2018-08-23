@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //this is an AI controller, the logic for the AI is implemented here.
-//v0.1: walk towards the player and aim at it
+//v0.2: walk towards the player and aim at it. if the player is higher than you, jump
 public class AIControls : ActorControls {
 
     GameObject m_gameObjectPlayerReference;
@@ -24,9 +24,13 @@ public class AIControls : ActorControls {
         {
             m_floatXMovementInput = -1.0f;
         }
-        if(vectorToPlayer.y > 0.0f)
+        if (vectorToPlayer.y > 0.0f)
         {
             m_boolJumpInput = true;
+        }
+        else
+        {
+            m_boolJumpInput = false;
         }
         m_floatYMovementInput = 0.0f;
     }

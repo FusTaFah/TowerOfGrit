@@ -911,7 +911,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 927955165}
   m_LocalRotation: {x: -0, y: -0, z: -0.34621778, w: 0.9381542}
-  m_LocalPosition: {x: -32.7, y: 12.3, z: 0}
+  m_LocalPosition: {x: -33.05, y: 12.13, z: 0}
   m_LocalScale: {x: 142.01945, y: 4.912503, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1109,7 +1109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_floatMovementSpeed: 100
-  m_floatJumpHeight: 200
+  m_floatJumpHeight: 400
   m_floatMaxSlope: 45
 --- !u!50 &1211000646
 Rigidbody2D:
@@ -1306,7 +1306,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1272970396}
   m_LocalRotation: {x: -0, y: -0, z: 0.82855415, w: 0.559909}
-  m_LocalPosition: {x: -42.6, y: 27, z: 0}
+  m_LocalPosition: {x: -42.98, y: 27, z: 0}
   m_LocalScale: {x: 142.01945, y: 4.912503, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
