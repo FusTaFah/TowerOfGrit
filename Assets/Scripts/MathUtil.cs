@@ -28,4 +28,10 @@ public class MathUtil {
         }
         return 0.0f;
     }
+
+    public static Vector2 FromAngleToArgument(float theta)
+    {
+        float angle = (theta % 360.0f) * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+    }
 }
