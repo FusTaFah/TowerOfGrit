@@ -24,7 +24,7 @@ public class ActorControls : MonoBehaviour {
     protected float m_floatXAimingInput;
     protected float m_floatYAimingInput;
 
-    void Start () {
+    protected virtual void Start () {
         m_floatXSpeed = 0.0f;
         m_gameObjectAimLine = Instantiate(Resources.Load("Prefabs/AimLine")) as GameObject;
         m_boolIsCrouching = false;
@@ -33,16 +33,15 @@ public class ActorControls : MonoBehaviour {
         m_rigidBody2DplayerRig = gameObject.GetComponent<Rigidbody2D>();
         m_boolFacingRight = true;
         m_debugUtil = GameObject.Find("DebugCanvasElementent").GetComponent<DebugUtil>();
-        Initialise();
     }
 
-    void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         ResolveMovementInputs();
         ResolveMovement();
     }
 
-    void Update () {
+    protected virtual void Update () {
         ResolveAimingInputs();
         ResolveAimLine();
         ResolveFacingDirection();
@@ -206,16 +205,16 @@ public class ActorControls : MonoBehaviour {
         m_gameObjectAimLine.transform.rotation = Quaternion.Euler(0.0f, 0.0f, zeroOffset + angle * Mathf.Rad2Deg);
     }
 
+    public Quaternion GetActorAimLineDirection()
+    {
+        return m_gameObjectAimLine.transform.rotation;
+    }
+
     private void ResolveFacingDirection()
     {
         m_vector3PlayerScale = new Vector3((m_boolFacingRight ? 1 : -1) * Mathf.Abs(m_vector3PlayerScale.x), m_vector3PlayerScale.y, m_vector3PlayerScale.z);
         
         gameObject.transform.localScale = new Vector3(m_vector3PlayerScale.x, m_vector3PlayerScale.y / (m_boolIsCrouching ? 2.0f : 1.0f), m_vector3PlayerScale.z);
-    }
-
-    protected virtual void Initialise()
-    {
-
     }
 
     protected virtual void ResolveAimingInputs()
