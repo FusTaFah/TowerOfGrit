@@ -62,65 +62,11 @@ public class ActorControls : MonoBehaviour {
         m_floatXSpeed = moveX * m_floatMovementSpeed * Time.deltaTime;
         m_floatXSpeed = Mathf.Clamp(m_floatXSpeed, -3.0f, 3.0f);
         Vector2 boundingBoxCenter = new Vector2(m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.center.x, m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.center.y);
-        Vector2 boundingBoxBottomLeft = boundingBoxCenter - new Vector2(m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f - m_constFloatGroundDistanceQualifier, m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
-        Vector2 boundingBoxBottomRight = boundingBoxCenter - new Vector2(-m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f + m_constFloatGroundDistanceQualifier, m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
-        Collider2D rch = Physics2D.OverlapArea(boundingBoxBottomLeft, boundingBoxBottomRight);
+        SlopeCheckInfo slopeCheckInfo = CheckSlopeAndJump(boundingBoxCenter, m_rigidBody2DActorRig, m_boolFacingRight, m_floatMaxSlope);
 
-        
-        Vector2 boundingBoxTopLeft = boundingBoxCenter - new Vector2(m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f + m_constFloatGroundDistanceQualifier * 1.0f, -m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
-        Vector2 boundingBoxTopRight = boundingBoxCenter - new Vector2(-m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f - m_constFloatGroundDistanceQualifier * 1.0f, -m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
-        RaycastHit2D slopeCheckLeft = Physics2D.Raycast(boundingBoxTopLeft, Vector2.down, m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y);
-        RaycastHit2D slopeCheckRight = Physics2D.Raycast(boundingBoxTopRight, Vector2.down, m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y);
-        Debug.DrawLine(boundingBoxTopLeft, boundingBoxTopLeft + Vector2.down * m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y, Color.green);
-        Debug.DrawLine(boundingBoxTopRight, boundingBoxTopRight + Vector2.down * m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y, Color.red);
-
-        bool enableJumping = true;
-        bool enableMovement = true;
-        //ONLY if the player gets stuck
-        bool jumpingOverride = false;
-
-        if(slopeCheckLeft.collider != null || slopeCheckRight.collider != null)
+        if (slopeCheckInfo.EnableJumping)
         {
-            float heightFromFeetLeft = (slopeCheckLeft.collider == null ? 0.0f : m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckLeft.distance);
-            float heightFromFeetRight = (slopeCheckRight.collider == null ? 0.0f : m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckRight.distance);
-
-            //as of 22/08/2018 it seems the angle is off by approximately 3.3 degrees if m_constFloatGroundDistanceQualifier is 2.0f
-            float angleBetweenLeft = (Mathf.Atan(heightFromFeetLeft / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f + 3.3f;
-            float angleBetweenRight = (Mathf.Atan(heightFromFeetRight / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f + 3.3f;
-            //if (angleBetweenLeft >= 80.0f || angleBetweenRight >= 80.0f) jumpingOverride = true;
-            if (!m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight <= m_floatMaxSlope)
-            {
-                enableJumping = false;
-                enableMovement = false;
-            }
-            else if (!m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
-            {
-                enableJumping = true;
-                jumpingOverride = true;
-                enableMovement = false;
-            }
-            else if (!m_boolFacingRight && angleBetweenLeft <= m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
-            {
-                enableJumping = false;
-                enableMovement = true;
-            }
-            else if (m_boolFacingRight && angleBetweenLeft > m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
-            {
-                enableJumping = true;
-                jumpingOverride = true;
-                enableMovement = false;
-            }
-            else if (m_boolFacingRight && angleBetweenLeft <= m_floatMaxSlope && angleBetweenRight > m_floatMaxSlope)
-            {
-                enableJumping = false;
-                enableMovement = false;
-            }
-
-        }
-
-        if (enableJumping)
-        {
-            if (rch != null || jumpingOverride)
+            if (slopeCheckInfo.collider != null || slopeCheckInfo.JumpingOverride)
             {
                 if (moveX == 0.0f && !m_boolIsJumping)
                 {
@@ -139,7 +85,7 @@ public class ActorControls : MonoBehaviour {
                 m_boolIsJumping = false;
             }
         }
-        if (enableMovement)
+        if (slopeCheckInfo.EnableMovement)
         {
             m_rigidBody2DActorRig.velocity = new Vector2(m_floatXSpeed * (m_boolIsCrouching ? 0.5f : 1.0f), m_rigidBody2DActorRig.velocity.y);
         }
@@ -211,11 +157,84 @@ public class ActorControls : MonoBehaviour {
         gameObject.transform.localScale = new Vector3(m_vector3PlayerScale.x, m_vector3PlayerScale.y / (m_boolIsCrouching ? 2.0f : 1.0f), m_vector3PlayerScale.z);
     }
 
+    protected static SlopeCheckInfo CheckSlopeAndJump(Vector2 boundingBoxCenter, Rigidbody2D actorRig, bool facingRight, float maxSlope)
+    {
+        Vector2 boundingBoxBottomLeft = boundingBoxCenter - new Vector2(actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f - m_constFloatGroundDistanceQualifier, actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
+        Vector2 boundingBoxBottomRight = boundingBoxCenter - new Vector2(-actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f + m_constFloatGroundDistanceQualifier, actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f + m_constFloatGroundDistanceQualifier);
+        Collider2D bottomAreaBoxOverlap = Physics2D.OverlapArea(boundingBoxBottomLeft, boundingBoxBottomRight);
+
+        Vector2 boundingBoxTopLeft = boundingBoxCenter - new Vector2(actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f + m_constFloatGroundDistanceQualifier * 1.0f, -actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
+        Vector2 boundingBoxTopRight = boundingBoxCenter - new Vector2(-actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f - m_constFloatGroundDistanceQualifier * 1.0f, -actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
+        RaycastHit2D slopeCheckLeft = Physics2D.Raycast(boundingBoxTopLeft, Vector2.down, actorRig.GetComponent<Collider2D>().bounds.size.y);
+        RaycastHit2D slopeCheckRight = Physics2D.Raycast(boundingBoxTopRight, Vector2.down, actorRig.GetComponent<Collider2D>().bounds.size.y);
+        Debug.DrawLine(boundingBoxTopLeft, boundingBoxTopLeft + Vector2.down * actorRig.GetComponent<Collider2D>().bounds.size.y, Color.green);
+        Debug.DrawLine(boundingBoxTopRight, boundingBoxTopRight + Vector2.down * actorRig.GetComponent<Collider2D>().bounds.size.y, Color.red);
+
+        bool enableJumping = true;
+        bool enableMovement = true;
+        //ONLY if the player gets stuck
+        bool jumpingOverride = false;
+
+        if (slopeCheckLeft.collider != null || slopeCheckRight.collider != null)
+        {
+            float heightFromFeetLeft = (slopeCheckLeft.collider == null ? 0.0f : actorRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckLeft.distance);
+            float heightFromFeetRight = (slopeCheckRight.collider == null ? 0.0f : actorRig.GetComponent<Collider2D>().bounds.size.y - slopeCheckRight.distance);
+
+            //as of 22/08/2018 it seems the angle is off by approximately 3.3 degrees if m_constFloatGroundDistanceQualifier is 2.0f
+            float angleBetweenLeft = (Mathf.Atan(heightFromFeetLeft / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f + 3.3f;
+            float angleBetweenRight = (Mathf.Atan(heightFromFeetRight / m_constFloatGroundDistanceQualifier) * Mathf.Rad2Deg) % 80.0f + 3.3f;
+            //if (angleBetweenLeft >= 80.0f || angleBetweenRight >= 80.0f) jumpingOverride = true;
+            if (!facingRight && angleBetweenLeft > maxSlope && angleBetweenRight <= maxSlope)
+            {
+                enableJumping = false;
+                enableMovement = false;
+            }
+            else if (!facingRight && angleBetweenLeft > maxSlope && angleBetweenRight > maxSlope)
+            {
+                enableJumping = true;
+                jumpingOverride = true;
+                enableMovement = false;
+            }
+            else if (!facingRight && angleBetweenLeft <= maxSlope && angleBetweenRight > maxSlope)
+            {
+                enableJumping = false;
+                enableMovement = true;
+            }
+            else if (facingRight && angleBetweenLeft > maxSlope && angleBetweenRight > maxSlope)
+            {
+                enableJumping = true;
+                jumpingOverride = true;
+                enableMovement = false;
+            }
+            else if (facingRight && angleBetweenLeft <= maxSlope && angleBetweenRight > maxSlope)
+            {
+                enableJumping = false;
+                enableMovement = false;
+            }
+            
+        }
+        return new SlopeCheckInfo
+        {
+            EnableJumping = enableJumping,
+            EnableMovement = enableMovement,
+            JumpingOverride = jumpingOverride,
+            collider = bottomAreaBoxOverlap
+        };
+    }
+
     protected virtual void ResolveAimingInputs()
     {
     }
 
     protected virtual void ResolveMovementInputs()
     {
+    }
+
+    protected struct SlopeCheckInfo
+    {
+        public bool EnableJumping;
+        public bool EnableMovement;
+        public bool JumpingOverride;
+        public Collider2D collider;
     }
 }
