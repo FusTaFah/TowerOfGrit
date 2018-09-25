@@ -24,6 +24,8 @@ public class DebugUtil : MonoBehaviour
     //custom gameobject that represents a position marked by some stimulus
     public GameObject placeHolder;
     List<Pair<GameObject, float>> existingPlaceholders;
+    //length of MarkLocation2D lines
+    public float markLocation2DLineLength;
 
     // Use this for initialization
     void Start()
@@ -49,6 +51,17 @@ public class DebugUtil : MonoBehaviour
     public void MarkLocation(Vector3 position)
     {
         Instantiate(placeHolder, position, Quaternion.identity);
+    }
+
+    public void MarkDebugLocation2D(Vector2 position, Color color)
+    {
+        //diagonal right
+        Vector2 offsetDiagonalRight = new Vector2(-1.0f, -1.0f).normalized * markLocation2DLineLength;
+        Debug.DrawLine(position + offsetDiagonalRight, position - offsetDiagonalRight, color);
+        //diagonal left
+        Vector2 offsetDiagonalLeft = new Vector2(-1.0f, 1.0f).normalized * markLocation2DLineLength;
+        Debug.DrawLine(position + offsetDiagonalLeft, position - offsetDiagonalLeft, color);
+        
     }
 
     //instantiate a placeholder that terminates after a timeSpan

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 //this is an AI controller, the logic for the AI is implemented here.
 //v0.3: walk towards the player and aim at it. 
@@ -9,8 +10,9 @@ using UnityEngine;
 //if the player is at a certain distance, aim opposite to where it is aiming
 public class AIControls : ActorControls {
 
-    GameObject m_gameObjectPlayerReference;
-    bool m_boolCombatCondition;
+    public float        m_floatCombatDistance;
+    GameObject          m_gameObjectPlayerReference;
+    bool                m_boolCombatCondition;
 
     protected override void Start()
     {
@@ -71,6 +73,7 @@ public class AIControls : ActorControls {
             m_floatXMovementInput = -1.0f;
         }
         //check for obstructions
+        
         RaycastHit2D frontObsCheck = Physics2D.Raycast(m_rigidBody2DActorRig.position + (m_floatXMovementInput > 0.0f ? 1.0f : -1.0f) * new Vector2(m_rigidBody2DActorRig.GetComponent<Collider2D>().bounds.size.x * 0.5f + 0.05f, 0.0f), new Vector2(m_floatXMovementInput > 0.0f ? 1.0f : -1.0f, 0.0f), 2.0f);
         if (frontObsCheck.collider != null && frontObsCheck.collider.gameObject != null && frontObsCheck.collider.gameObject != m_gameObjectPlayerReference)
         {
@@ -94,9 +97,19 @@ public class AIControls : ActorControls {
 
     private void MovementAimingBehaviour()
     {
-        Vector2 vectorToPlayer = m_gameObjectPlayerReference.GetComponent<Rigidbody2D>().position - gameObject.GetComponent<Rigidbody2D>().position;
-        vectorToPlayer.Normalize();
-        m_floatXAimingInput = vectorToPlayer.x;
-        m_floatYAimingInput = -vectorToPlayer.y;
+        //Vector2 vectorToPlayer = m_gameObjectPlayerReference.GetComponent<Rigidbody2D>().position - gameObject.GetComponent<Rigidbody2D>().position;
+        //vectorToPlayer.Normalize();
+        //m_floatXAimingInput = vectorToPlayer.x;
+        //m_floatYAimingInput = -vectorToPlayer.y;
+        m_floatXAimingInput = 0.0f;
+        m_floatYAimingInput = 0.0f;
+    }
+
+    protected enum AIState
+    {
+        IDLE,
+        PATROLLING,
+        COMBATCHASE,
+        COMBATENGAGE,
     }
 }
