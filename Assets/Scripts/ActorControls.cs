@@ -14,6 +14,7 @@ public class ActorControls : MonoBehaviour {
     const float             m_constFloatGroundDistanceQualifier = 0.2f;
     const float             m_constFloatDeadZone = 0.1f;
     const float             m_constFloatHalfMinTerrainCheck = 0.05f;
+    const float             m_constFloatColliderToGroundDistance = 0.0159f;
     bool                    m_boolFacingRight;
     bool                    m_boolIsJumping;
     bool                    m_boolIsCrouching;
@@ -222,16 +223,20 @@ public class ActorControls : MonoBehaviour {
 
 
         //describe the box
-        Vector2 boundingBoxBottomLeftSlopeCheck = boundingBoxCenter + new Vector2(-actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f - 0.02f, -actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
-        Vector2 boundingBoxBottomRighSlopeCheck = boundingBoxCenter + new Vector2(+actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f + 0.02f, -actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
+        Vector2 boundingBoxBottomLeftSlopeCheck = boundingBoxCenter + new Vector2(-actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f, -actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
+        Vector2 boundingBoxBottomRighSlopeCheck = boundingBoxCenter + new Vector2(+actorRig.GetComponent<Collider2D>().bounds.size.x / 2.0f, -actorRig.GetComponent<Collider2D>().bounds.size.y / 2.0f);
         //OFFSET BOTTOM WITH ANGLED ARG
         //m_constFloatHalfMinTerrainCheck;
         Vector2 argLeft = MathUtil.FromAngleToArgument(maxSlope); argLeft.x = -argLeft.x;
         Vector2 argRigh = MathUtil.FromAngleToArgument(maxSlope);
-        m_debugUtil.MarkDebugLocation2D(boundingBoxBottomLeftSlopeCheck + argLeft * m_constFloatHalfMinTerrainCheck, Color.green);
-        m_debugUtil.MarkDebugLocation2D(boundingBoxBottomRighSlopeCheck + argRigh * m_constFloatHalfMinTerrainCheck, Color.red);
-        Collider2D leftSlopePointCheck = Physics2D.OverlapPoint(boundingBoxBottomLeftSlopeCheck + argLeft * m_constFloatHalfMinTerrainCheck);
-        Collider2D righSlopePointCheck = Physics2D.OverlapPoint(boundingBoxBottomRighSlopeCheck + argRigh * m_constFloatHalfMinTerrainCheck);
+        Vector2 argLeftGroundEpsilon = MathUtil.FromAngleToArgument(90.0f - maxSlope); argLeftGroundEpsilon.x = -argLeftGroundEpsilon.x; argLeftGroundEpsilon.y = -argLeftGroundEpsilon.y;
+        Vector2 argRighGroundEpsilon = MathUtil.FromAngleToArgument(90.0f - maxSlope); argRighGroundEpsilon.y = -argRighGroundEpsilon.y;
+        Vector2 resultantLeftCheckPosition = boundingBoxBottomLeftSlopeCheck + argLeft * m_constFloatHalfMinTerrainCheck + argLeftGroundEpsilon * m_constFloatColliderToGroundDistance;
+        Vector2 resultantRighCheckPosition = boundingBoxBottomRighSlopeCheck + argRigh * m_constFloatHalfMinTerrainCheck + argRighGroundEpsilon * m_constFloatColliderToGroundDistance;
+        m_debugUtil.MarkDebugLocation2D(resultantLeftCheckPosition, Color.green);
+        m_debugUtil.MarkDebugLocation2D(resultantRighCheckPosition, Color.red);
+        Collider2D leftSlopePointCheck = Physics2D.OverlapPoint(resultantLeftCheckPosition);
+        Collider2D righSlopePointCheck = Physics2D.OverlapPoint(resultantRighCheckPosition);
 
         bool enableJumping = true;
         bool enableMovement = true;
@@ -240,6 +245,9 @@ public class ActorControls : MonoBehaviour {
         
         bool isLeftTraversable = leftSlopePointCheck == null;
         bool isRighTraversable = righSlopePointCheck == null;
+        m_debugUtil.AppendDebugger(isLeftTraversable.ToString());
+        Debug.Log(isLeftTraversable);
+        m_debugUtil.AppendDebugger(isRighTraversable.ToString());
         if (!facingRight && !isLeftTraversable && isRighTraversable)
         {
             enableJumping = false;

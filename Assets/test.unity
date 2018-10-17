@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 165163205}
   - component: {fileID: 165163204}
   - component: {fileID: 165163203}
+  - component: {fileID: 165163206}
   m_Layer: 0
   m_Name: Ground (3)
   m_TagString: Ground
@@ -205,13 +206,30 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 165163202}
-  m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: -0.3907311, w: 0.9205049}
   m_LocalPosition: {x: -44.56, y: 1.99, z: 0}
   m_LocalScale: {x: 142.01945, y: 4.912503, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -46}
+--- !u!68 &165163206
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 165163202}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.08, y: 0}
+  - {x: 0.08, y: 0}
 --- !u!1 &428862672
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +330,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 428862672}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 17ed091cc2a4d424581cf1a50624396d, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -344,7 +362,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 17ed091cc2a4d424581cf1a50624396d, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
